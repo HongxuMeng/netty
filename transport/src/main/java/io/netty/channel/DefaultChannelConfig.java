@@ -41,6 +41,8 @@ import static io.netty.util.internal.ObjectUtil.checkNotNull;
 import static io.netty.util.internal.ObjectUtil.checkPositive;
 import static io.netty.util.internal.ObjectUtil.checkPositiveOrZero;
 
+import java.util.logging.Logger;
+
 /**
  * The default {@link ChannelConfig} implementation.
  */
@@ -121,7 +123,8 @@ public class DefaultChannelConfig implements ChannelConfig {
     @SuppressWarnings({ "unchecked", "deprecation" })
     public <T> T getOption(ChannelOption<T> option) {
         ObjectUtil.checkNotNull(option, "option");
-
+        Logger LOGGER = Logger.getLogger("InfoLogging");
+        LOGGER.warning("[getOption] " + option.toString());
         if (option == CONNECT_TIMEOUT_MILLIS) {
             return (T) Integer.valueOf(getConnectTimeoutMillis());
         }
