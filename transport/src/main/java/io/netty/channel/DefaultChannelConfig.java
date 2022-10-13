@@ -83,6 +83,14 @@ public class DefaultChannelConfig implements ChannelConfig {
         this.channel = channel;
     }
 
+    private String getStackTrace() {
+        String stacktrace = " ";
+        for (StackTraceElement element : Thread.currentThread().getStackTrace()) {
+          stacktrace = stacktrace.concat(element.getClassName() + "\t");
+        }
+        return stacktrace;
+    }
+
     @Override
     @SuppressWarnings("deprecation")
     public Map<ChannelOption<?>, Object> getOptions() {
@@ -210,7 +218,7 @@ public class DefaultChannelConfig implements ChannelConfig {
 
     @Override
     public int getConnectTimeoutMillis() {
-        LOGGER.warning("[CTEST][GET-PARAM] ConnectTimeoutMillis");
+        LOGGER.warning("[CTEST][GET-PARAM] connectTimeoutMillis");
         return connectTimeoutMillis;
     }
 
@@ -218,6 +226,7 @@ public class DefaultChannelConfig implements ChannelConfig {
     public ChannelConfig setConnectTimeoutMillis(int connectTimeoutMillis) {
         checkPositiveOrZero(connectTimeoutMillis, "connectTimeoutMillis");
         this.connectTimeoutMillis = connectTimeoutMillis;
+        LOGGER.warning("[CTEST][SET-PARAM] connectTimeoutMillis" + getStackTrace());
         return this;
     }
 
@@ -232,7 +241,7 @@ public class DefaultChannelConfig implements ChannelConfig {
     public int getMaxMessagesPerRead() {
         try {
             MaxMessagesRecvByteBufAllocator allocator = getRecvByteBufAllocator();
-            LOGGER.warning("[CTEST][GET-PARAM] MaxMessagesPerRead");
+            LOGGER.warning("[CTEST][GET-PARAM] maxMessagesPerRead");
             return allocator.maxMessagesPerRead();
         } catch (ClassCastException e) {
             throw new IllegalStateException("getRecvByteBufAllocator() must return an object of type " +
@@ -252,6 +261,7 @@ public class DefaultChannelConfig implements ChannelConfig {
         try {
             MaxMessagesRecvByteBufAllocator allocator = getRecvByteBufAllocator();
             allocator.maxMessagesPerRead(maxMessagesPerRead);
+            LOGGER.warning("[CTEST][SET-PARAM] MaxMessagesPerRead" + getStackTrace());
             return this;
         } catch (ClassCastException e) {
             throw new IllegalStateException("getRecvByteBufAllocator() must return an object of type " +
@@ -264,7 +274,7 @@ public class DefaultChannelConfig implements ChannelConfig {
      * reached we will continue to process other events before trying to write the remaining messages.
      */
     public int getMaxMessagesPerWrite() {
-        LOGGER.warning("[CTEST][GET-PARAM] MaxMessagesPerWrite");
+        LOGGER.warning("[CTEST][GET-PARAM] maxMessagesPerWrite");
         return maxMessagesPerWrite;
     }
 
@@ -274,12 +284,13 @@ public class DefaultChannelConfig implements ChannelConfig {
      */
     public ChannelConfig setMaxMessagesPerWrite(int maxMessagesPerWrite) {
         this.maxMessagesPerWrite = ObjectUtil.checkPositive(maxMessagesPerWrite, "maxMessagesPerWrite");
+        LOGGER.warning("[CTEST][SET-PARAM] maxMessagesPerWrite" + getStackTrace());
         return this;
     }
 
     @Override
     public int getWriteSpinCount() {
-        LOGGER.warning("[CTEST][GET-PARAM] WriteSpinCount");
+        LOGGER.warning("[CTEST][GET-PARAM] writeSpinCount");
         return writeSpinCount;
     }
 
@@ -294,31 +305,34 @@ public class DefaultChannelConfig implements ChannelConfig {
             --writeSpinCount;
         }
         this.writeSpinCount = writeSpinCount;
+        LOGGER.warning("[CTEST][SET-PARAM] writeSpinCount" + getStackTrace());
         return this;
     }
 
     @Override
     public ByteBufAllocator getAllocator() {
-        LOGGER.warning("[CTEST][GET-PARAM] Allocator");
+        LOGGER.warning("[CTEST][GET-PARAM] allocator");
         return allocator;
     }
 
     @Override
     public ChannelConfig setAllocator(ByteBufAllocator allocator) {
         this.allocator = ObjectUtil.checkNotNull(allocator, "allocator");
+        LOGGER.warning("[CTEST][SET-PARAM] allocator" + getStackTrace());
         return this;
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public <T extends RecvByteBufAllocator> T getRecvByteBufAllocator() {
-        LOGGER.warning("[CTEST][GET-PARAM] RecvByteBufAllocator");
+        LOGGER.warning("[CTEST][GET-PARAM] recvByteBufAllocator");
         return (T) rcvBufAllocator;
     }
 
     @Override
     public ChannelConfig setRecvByteBufAllocator(RecvByteBufAllocator allocator) {
         rcvBufAllocator = checkNotNull(allocator, "allocator");
+        LOGGER.warning("[CTEST][SET-PARAM] recvByteBufAllocator" + getStackTrace());
         return this;
     }
 
@@ -335,11 +349,12 @@ public class DefaultChannelConfig implements ChannelConfig {
             ((MaxMessagesRecvByteBufAllocator) allocator).maxMessagesPerRead(metadata.defaultMaxMessagesPerRead());
         }
         setRecvByteBufAllocator(allocator);
+        LOGGER.warning("[CTEST][SET-PARAM] recvByteBufAllocator" + getStackTrace());
     }
 
     @Override
     public boolean isAutoRead() {
-        LOGGER.warning("[CTEST][GET-PARAM] isAutoRead");
+        LOGGER.warning("[CTEST][GET-PARAM] autoRead");
         return autoRead == 1;
     }
 
@@ -351,6 +366,7 @@ public class DefaultChannelConfig implements ChannelConfig {
         } else if (!autoRead && oldAutoRead) {
             autoReadCleared();
         }
+        LOGGER.warning("[CTEST][SET-PARAM] autoRead" + getStackTrace());
         return this;
     }
 
@@ -362,25 +378,27 @@ public class DefaultChannelConfig implements ChannelConfig {
 
     @Override
     public boolean isAutoClose() {
-        LOGGER.warning("[CTEST][GET-PARAM] isAutoClose");
+        LOGGER.warning("[CTEST][GET-PARAM] autoClose");
         return autoClose;
     }
 
     @Override
     public ChannelConfig setAutoClose(boolean autoClose) {
         this.autoClose = autoClose;
+        LOGGER.warning("[CTEST][SET-PARAM] autoClose" + getStackTrace());
         return this;
     }
 
     @Override
     public int getWriteBufferHighWaterMark() {
-        LOGGER.warning("[CTEST][GET-PARAM] WriteBufferHighWaterMark");
+        LOGGER.warning("[CTEST][GET-PARAM] writeBufferHighWaterMark");
         return writeBufferWaterMark.high();
     }
 
     @Override
     public ChannelConfig setWriteBufferHighWaterMark(int writeBufferHighWaterMark) {
         checkPositiveOrZero(writeBufferHighWaterMark, "writeBufferHighWaterMark");
+        LOGGER.warning("[CTEST][SET-PARAM] writeBufferHighWaterMark" + getStackTrace());
         for (;;) {
             WriteBufferWaterMark waterMark = writeBufferWaterMark;
             if (writeBufferHighWaterMark < waterMark.low()) {
@@ -398,13 +416,14 @@ public class DefaultChannelConfig implements ChannelConfig {
 
     @Override
     public int getWriteBufferLowWaterMark() {
-        LOGGER.warning("[CTEST][GET-PARAM] WriteBufferLowWaterMark");
+        LOGGER.warning("[CTEST][GET-PARAM] writeBufferLowWaterMark");
         return writeBufferWaterMark.low();
     }
 
     @Override
     public ChannelConfig setWriteBufferLowWaterMark(int writeBufferLowWaterMark) {
         checkPositiveOrZero(writeBufferLowWaterMark, "writeBufferLowWaterMark");
+        LOGGER.warning("[CTEST][SET-PARAM] writeBufferLowWaterMark" + getStackTrace());
         for (;;) {
             WriteBufferWaterMark waterMark = writeBufferWaterMark;
             if (writeBufferLowWaterMark > waterMark.high()) {
@@ -423,34 +442,37 @@ public class DefaultChannelConfig implements ChannelConfig {
     @Override
     public ChannelConfig setWriteBufferWaterMark(WriteBufferWaterMark writeBufferWaterMark) {
         this.writeBufferWaterMark = checkNotNull(writeBufferWaterMark, "writeBufferWaterMark");
+        LOGGER.warning("[CTEST][SET-PARAM] writeBufferWaterMark" + getStackTrace());
         return this;
     }
 
     @Override
     public WriteBufferWaterMark getWriteBufferWaterMark() {
-        LOGGER.warning("[CTEST][GET-PARAM] WriteBufferWaterMark");
+        LOGGER.warning("[CTEST][GET-PARAM] writeBufferWaterMark");
         return writeBufferWaterMark;
     }
 
     @Override
     public MessageSizeEstimator getMessageSizeEstimator() {
-        LOGGER.warning("[CTEST][GET-PARAM] MessageSizeEstimator");
+        LOGGER.warning("[CTEST][GET-PARAM] messageSizeEstimator");
         return msgSizeEstimator;
     }
 
     @Override
     public ChannelConfig setMessageSizeEstimator(MessageSizeEstimator estimator) {
         this.msgSizeEstimator = ObjectUtil.checkNotNull(estimator, "estimator");
+        LOGGER.warning("[CTEST][SET-PARAM] messageSizeEstimator" + getStackTrace());
         return this;
     }
 
     private ChannelConfig setPinEventExecutorPerGroup(boolean pinEventExecutor) {
         this.pinEventExecutor = pinEventExecutor;
+        LOGGER.warning("[CTEST][SET-PARAM] pinEventExecutorPerGroup" + getStackTrace());
         return this;
     }
 
     private boolean getPinEventExecutorPerGroup() {
-        LOGGER.warning("[CTEST][GET-PARAM] PinEventExecutorPerGroup");
+        LOGGER.warning("[CTEST][GET-PARAM] pinEventExecutorPerGroup");
         return pinEventExecutor;
     }
 
