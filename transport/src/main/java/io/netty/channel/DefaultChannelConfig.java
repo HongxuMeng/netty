@@ -47,6 +47,7 @@ import java.util.logging.Logger;
  * The default {@link ChannelConfig} implementation.
  */
 public class DefaultChannelConfig implements ChannelConfig {
+    Logger LOGGER = Logger.getLogger("InfoLogging");
     private static final MessageSizeEstimator DEFAULT_MSG_SIZE_ESTIMATOR = DefaultMessageSizeEstimator.DEFAULT;
 
     private static final int DEFAULT_CONNECT_TIMEOUT = 30000;
@@ -123,8 +124,6 @@ public class DefaultChannelConfig implements ChannelConfig {
     @SuppressWarnings({ "unchecked", "deprecation" })
     public <T> T getOption(ChannelOption<T> option) {
         ObjectUtil.checkNotNull(option, "option");
-        Logger LOGGER = Logger.getLogger("InfoLogging");
-        LOGGER.warning("[getOption] " + option.toString());
         if (option == CONNECT_TIMEOUT_MILLIS) {
             return (T) Integer.valueOf(getConnectTimeoutMillis());
         }
@@ -211,6 +210,7 @@ public class DefaultChannelConfig implements ChannelConfig {
 
     @Override
     public int getConnectTimeoutMillis() {
+        LOGGER.warning("[CTEST][GET-PARAM] ConnectTimeoutMillis");
         return connectTimeoutMillis;
     }
 
@@ -232,6 +232,7 @@ public class DefaultChannelConfig implements ChannelConfig {
     public int getMaxMessagesPerRead() {
         try {
             MaxMessagesRecvByteBufAllocator allocator = getRecvByteBufAllocator();
+            LOGGER.warning("[CTEST][GET-PARAM] MaxMessagesPerRead");
             return allocator.maxMessagesPerRead();
         } catch (ClassCastException e) {
             throw new IllegalStateException("getRecvByteBufAllocator() must return an object of type " +
@@ -263,6 +264,7 @@ public class DefaultChannelConfig implements ChannelConfig {
      * reached we will continue to process other events before trying to write the remaining messages.
      */
     public int getMaxMessagesPerWrite() {
+        LOGGER.warning("[CTEST][GET-PARAM] MaxMessagesPerWrite");
         return maxMessagesPerWrite;
     }
 
@@ -277,6 +279,7 @@ public class DefaultChannelConfig implements ChannelConfig {
 
     @Override
     public int getWriteSpinCount() {
+        LOGGER.warning("[CTEST][GET-PARAM] WriteSpinCount");
         return writeSpinCount;
     }
 
@@ -296,6 +299,7 @@ public class DefaultChannelConfig implements ChannelConfig {
 
     @Override
     public ByteBufAllocator getAllocator() {
+        LOGGER.warning("[CTEST][GET-PARAM] Allocator");
         return allocator;
     }
 
@@ -308,6 +312,7 @@ public class DefaultChannelConfig implements ChannelConfig {
     @SuppressWarnings("unchecked")
     @Override
     public <T extends RecvByteBufAllocator> T getRecvByteBufAllocator() {
+        LOGGER.warning("[CTEST][GET-PARAM] RecvByteBufAllocator");
         return (T) rcvBufAllocator;
     }
 
@@ -334,6 +339,7 @@ public class DefaultChannelConfig implements ChannelConfig {
 
     @Override
     public boolean isAutoRead() {
+        LOGGER.warning("[CTEST][GET-PARAM] isAutoRead");
         return autoRead == 1;
     }
 
@@ -356,6 +362,7 @@ public class DefaultChannelConfig implements ChannelConfig {
 
     @Override
     public boolean isAutoClose() {
+        LOGGER.warning("[CTEST][GET-PARAM] isAutoClose");
         return autoClose;
     }
 
@@ -367,6 +374,7 @@ public class DefaultChannelConfig implements ChannelConfig {
 
     @Override
     public int getWriteBufferHighWaterMark() {
+        LOGGER.warning("[CTEST][GET-PARAM] WriteBufferHighWaterMark");
         return writeBufferWaterMark.high();
     }
 
@@ -390,6 +398,7 @@ public class DefaultChannelConfig implements ChannelConfig {
 
     @Override
     public int getWriteBufferLowWaterMark() {
+        LOGGER.warning("[CTEST][GET-PARAM] WriteBufferLowWaterMark");
         return writeBufferWaterMark.low();
     }
 
@@ -419,11 +428,13 @@ public class DefaultChannelConfig implements ChannelConfig {
 
     @Override
     public WriteBufferWaterMark getWriteBufferWaterMark() {
+        LOGGER.warning("[CTEST][GET-PARAM] WriteBufferWaterMark");
         return writeBufferWaterMark;
     }
 
     @Override
     public MessageSizeEstimator getMessageSizeEstimator() {
+        LOGGER.warning("[CTEST][GET-PARAM] MessageSizeEstimator");
         return msgSizeEstimator;
     }
 
@@ -439,6 +450,7 @@ public class DefaultChannelConfig implements ChannelConfig {
     }
 
     private boolean getPinEventExecutorPerGroup() {
+        LOGGER.warning("[CTEST][GET-PARAM] PinEventExecutorPerGroup");
         return pinEventExecutor;
     }
 
