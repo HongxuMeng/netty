@@ -1419,6 +1419,7 @@
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
+          <reportFormat>plain</reportFormat>
           <includes>
             <include>**/*Test*.java</include>
             <include>**/*Benchmark*.java</include>
@@ -1428,6 +1429,7 @@
             <exclude>**/*TestUtil*</exclude>
           </excludes>
           <runOrder>random</runOrder>
+          <redirectTestOutputToFile>true</redirectTestOutputToFile>
           <systemPropertyVariables>
             <logback.configurationFile>${logging.config}</logback.configurationFile>
             <logLevel>${logging.logLevel}</logLevel>
@@ -1683,7 +1685,7 @@
         <!-- keep surefire and failsafe in sync -->
         <plugin>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>2.22.2</version>
+          <version>3.0.0-M4</version>
         </plugin>
         <!-- keep surefire and failsafe in sync -->
         <plugin>
