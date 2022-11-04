@@ -60,19 +60,40 @@ public class DefaultChannelConfig implements ChannelConfig {
 
     protected final Channel channel;
 
-    private volatile ByteBufAllocator allocator = ByteBufAllocator.DEFAULT;
-    private volatile RecvByteBufAllocator rcvBufAllocator;
-    private volatile MessageSizeEstimator msgSizeEstimator = DEFAULT_MSG_SIZE_ESTIMATOR;
+    private Map<String, String> injection_map;
 
-    private volatile int connectTimeoutMillis = DEFAULT_CONNECT_TIMEOUT;
-    private volatile int writeSpinCount = 16;
-    private volatile int maxMessagesPerWrite = Integer.MAX_VALUE;
+    private volatile ByteBufAllocator allocator = ByteBufAllocator.DEFAULT; //incomplete
+
+    private volatile RecvByteBufAllocator rcvBufAllocator; //incomplete
+
+
+    private volatile MessageSizeEstimator msgSizeEstimator = DEFAULT_MSG_SIZE_ESTIMATOR; //incomplete
+  
+
+    private volatile int connectTimeoutMillis = injection_map.containsKey("connectTimeoutMillis")?
+        Integer.parseInt(injection_map.get("connectTimeoutMillis")):DEFAULT_CONNECT_TIMEOUT;
+
+
+    private volatile int writeSpinCount = injection_map.containsKey("writeSpinCount")?
+        Integer.parseInt(injection_map.get("writeSpinCount")):16;
+
+
+    private volatile int maxMessagesPerWrite = injection_map.containsKey("maxMessagesPerWrite")?
+        Integer.parseInt(injection_map.get("maxMessagesPerWrite")):Integer.MAX_VALUE;
 
     @SuppressWarnings("FieldMayBeFinal")
-    private volatile int autoRead = 1;
-    private volatile boolean autoClose = true;
-    private volatile WriteBufferWaterMark writeBufferWaterMark = WriteBufferWaterMark.DEFAULT;
-    private volatile boolean pinEventExecutor = true;
+    private volatile int autoRead = injection_map.containsKey("autoRead")?
+        Integer.parseInt(injection_map.get("autoRead")):1;
+
+    private volatile boolean autoClose = injection_map.containsKey("autoClose")?
+        (injection_map.get("autoRead").equals("false")?false:true):true;
+
+
+    private volatile WriteBufferWaterMark writeBufferWaterMark = WriteBufferWaterMark.DEFAULT; //incomplete
+
+    private volatile boolean pinEventExecutor = injection_map.containsKey("pinEventExecutor")?
+        (injection_map.get("pinEventExecutor").equals("false")?false:true):true;
+
 
     public DefaultChannelConfig(Channel channel) {
         this(channel, new AdaptiveRecvByteBufAllocator());
