@@ -42,6 +42,10 @@ import static io.netty.util.internal.ObjectUtil.checkPositive;
 import static io.netty.util.internal.ObjectUtil.checkPositiveOrZero;
 
 import java.util.logging.Logger;
+import org.json.JSONObject;
+import org.json.JSONTokener;
+import java.io.FileReader;
+import java.io.IOException;
 
 /**
  * The default {@link ChannelConfig} implementation.
@@ -60,40 +64,45 @@ public class DefaultChannelConfig implements ChannelConfig {
 
     protected final Channel channel;
 
-    private Map<String, String> injection_map;
+    // private JSONParser parser = new JSONParser();
+
+    private JSONObject jsonHandler() {
+        try {
+            JSONTokener tokener = new JSONTokener(new FileReader("../../../../../ctest.json"));
+            return new JSONObject(tokener);
+        } catch (IOException e) {
+            return null;
+        }
+    }
+
+    private JSONObject injection_map = jsonHandler();
 
     private volatile ByteBufAllocator allocator = ByteBufAllocator.DEFAULT; //incomplete
 
     private volatile RecvByteBufAllocator rcvBufAllocator; //incomplete
 
-
     private volatile MessageSizeEstimator msgSizeEstimator = DEFAULT_MSG_SIZE_ESTIMATOR; //incomplete
-  
 
-    private volatile int connectTimeoutMillis = injection_map.containsKey("connectTimeoutMillis")?
-        Integer.parseInt(injection_map.get("connectTimeoutMillis")):DEFAULT_CONNECT_TIMEOUT;
+    private volatile int connectTimeoutMillis = injection_map.has("connectTimeoutMillis")?
+        Integer.parseInt(injection_map.getString("connectTimeoutMillis")):DEFAULT_CONNECT_TIMEOUT;
 
+    private volatile int writeSpinCount = injection_map.has("writeSpinCount")?
+        Integer.parseInt(injection_map.getString("writeSpinCount")):16;
 
-    private volatile int writeSpinCount = injection_map.containsKey("writeSpinCount")?
-        Integer.parseInt(injection_map.get("writeSpinCount")):16;
-
-
-    private volatile int maxMessagesPerWrite = injection_map.containsKey("maxMessagesPerWrite")?
-        Integer.parseInt(injection_map.get("maxMessagesPerWrite")):Integer.MAX_VALUE;
+    private volatile int maxMessagesPerWrite = injection_map.has("maxMessagesPerWrite")?
+        Integer.parseInt(injection_map.getString("maxMessagesPerWrite")):Integer.MAX_VALUE;
 
     @SuppressWarnings("FieldMayBeFinal")
-    private volatile int autoRead = injection_map.containsKey("autoRead")?
-        Integer.parseInt(injection_map.get("autoRead")):1;
+    private volatile int autoRead = injection_map.has("autoRead")?
+        Integer.parseInt(injection_map.getString("autoRead")):1;
 
-    private volatile boolean autoClose = injection_map.containsKey("autoClose")?
-        (injection_map.get("autoRead").equals("false")?false:true):true;
-
+    private volatile boolean autoClose = injection_map.has("autoClose")?
+        (injection_map.getString("autoRead").equals("false")?false:true):true;
 
     private volatile WriteBufferWaterMark writeBufferWaterMark = WriteBufferWaterMark.DEFAULT; //incomplete
 
-    private volatile boolean pinEventExecutor = injection_map.containsKey("pinEventExecutor")?
-        (injection_map.get("pinEventExecutor").equals("false")?false:true):true;
-
+    private volatile boolean pinEventExecutor = injection_map.has("pinEventExecutor")?
+        (injection_map.getString("pinEventExecutor").equals("false")?false:true):true;
 
     public DefaultChannelConfig(Channel channel) {
         this(channel, new AdaptiveRecvByteBufAllocator());

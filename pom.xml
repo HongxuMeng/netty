@@ -1025,6 +1025,11 @@
   </dependencyManagement>
 
   <dependencies>
+    <dependency>
+      <groupId>org.json</groupId>
+      <artifactId>json</artifactId>
+      <version>20160810</version>
+    </dependency>
     <!-- Testing frameworks and related dependencies -->
     <dependency>
       <groupId>org.junit.jupiter</groupId>
