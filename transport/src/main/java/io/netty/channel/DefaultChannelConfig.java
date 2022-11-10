@@ -44,8 +44,11 @@ import static io.netty.util.internal.ObjectUtil.checkPositiveOrZero;
 import java.util.logging.Logger;
 import org.json.JSONObject;
 import org.json.JSONTokener;
-import java.io.FileReader;
+// import java.io.FileReader;
 import java.io.IOException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 
 /**
  * The default {@link ChannelConfig} implementation.
@@ -66,16 +69,24 @@ public class DefaultChannelConfig implements ChannelConfig {
 
     // private JSONParser parser = new JSONParser();
 
-    private JSONObject jsonHandler() {
-        try {
-            JSONTokener tokener = new JSONTokener(new FileReader("../../../../../ctest.json"));
-            return new JSONObject(tokener);
-        } catch (IOException e) {
-            return null;
-        }
-    }
+    // private JSONObject jsonHandler() {
+    //     System.err.println("AAAAAAAAAAAAAAAAAAAAAAA");
+    //     try {
+    //         // JSONTokener tokener = new JSONTokener(new FileReader("../../../../../../ctest.json"));
+    //         // return new JSONObject(tokener);
+    //         File file = new File("../../../../../../ctest.json");
+    //         InputStream is = new FileInputStream(file);
+    //         JSONTokener tokener = new JSONTokener(is);
+    //         JSONObject res =  new JSONObject(tokener);
+    //         System.err.println("This json file has length of " + res.length());
+    //         return res;
 
-    private JSONObject injection_map = jsonHandler();
+    //     } catch (IOException e) {
+    //         return null;
+    //     }
+    // }
+
+    // private JSONObject injection_map;
 
     private volatile ByteBufAllocator allocator = ByteBufAllocator.DEFAULT; //incomplete
 
@@ -83,32 +94,63 @@ public class DefaultChannelConfig implements ChannelConfig {
 
     private volatile MessageSizeEstimator msgSizeEstimator = DEFAULT_MSG_SIZE_ESTIMATOR; //incomplete
 
-    private volatile int connectTimeoutMillis = injection_map.has("connectTimeoutMillis")?
-        Integer.parseInt(injection_map.getString("connectTimeoutMillis")):DEFAULT_CONNECT_TIMEOUT;
+    private volatile int connectTimeoutMillis = DEFAULT_CONNECT_TIMEOUT;
 
-    private volatile int writeSpinCount = injection_map.has("writeSpinCount")?
-        Integer.parseInt(injection_map.getString("writeSpinCount")):16;
+    private volatile int writeSpinCount = 16;
 
-    private volatile int maxMessagesPerWrite = injection_map.has("maxMessagesPerWrite")?
-        Integer.parseInt(injection_map.getString("maxMessagesPerWrite")):Integer.MAX_VALUE;
+    private volatile int maxMessagesPerWrite = Integer.MAX_VALUE;
 
     @SuppressWarnings("FieldMayBeFinal")
-    private volatile int autoRead = injection_map.has("autoRead")?
-        Integer.parseInt(injection_map.getString("autoRead")):1;
+    private volatile int autoRead = 1;
 
-    private volatile boolean autoClose = injection_map.has("autoClose")?
-        (injection_map.getString("autoRead").equals("false")?false:true):true;
+    private volatile boolean autoClose = true;
 
     private volatile WriteBufferWaterMark writeBufferWaterMark = WriteBufferWaterMark.DEFAULT; //incomplete
 
-    private volatile boolean pinEventExecutor = injection_map.has("pinEventExecutor")?
-        (injection_map.getString("pinEventExecutor").equals("false")?false:true):true;
+    private volatile boolean pinEventExecutor = true;
 
     public DefaultChannelConfig(Channel channel) {
         this(channel, new AdaptiveRecvByteBufAllocator());
     }
 
     protected DefaultChannelConfig(Channel channel, RecvByteBufAllocator allocator) {
+
+        try {
+            System.out.println("Working Directory = " + System.getProperty("user.dir"));
+            // JSONTokener tokener = new JSONTokener(new FileReader("../../../../../../ctest.json"));
+            // return new JSONObject(tokener);
+            LOGGER.warning("[INJECTING CTEST] START INJECTION");
+            File file = new File("ctest.json");
+            InputStream is = new FileInputStream(file);
+            JSONTokener tokener = new JSONTokener(is);
+            JSONObject injection_map =  new JSONObject(tokener);
+            if (injection_map.has("connectTimeoutMillis")) {
+                LOGGER.warning("[INJECTING CTEST] INJECTING connectTimeoutMillis");
+                connectTimeoutMillis = Integer.parseInt(injection_map.getString("connectTimeoutMillis"));
+            }
+            if (injection_map.has("writeSpinCount")) {
+                LOGGER.warning("[INJECTING CTEST] INJECTING writeSpinCount");
+                writeSpinCount = Integer.parseInt(injection_map.getString("writeSpinCount"));
+            }
+            if (injection_map.has("maxMessagesPerWrite")) {
+                LOGGER.warning("[INJECTING CTEST] INJECTING maxMessagesPerWrite");
+                maxMessagesPerWrite = Integer.parseInt(injection_map.getString("maxMessagesPerWrite"));
+            }
+            if (injection_map.has("autoRead")) {
+                LOGGER.warning("[INJECTING CTEST] INJECTING autoRead");
+                autoRead = Integer.parseInt(injection_map.getString("autoRead"));
+            }
+            if (injection_map.has("autoClose")) {
+                LOGGER.warning("[INJECTING CTEST] INJECTING autoClose");
+                autoClose = injection_map.getString("autoRead").equals("false")?false:true;
+            }
+            if (injection_map.has("pinEventExecutor")) {
+                LOGGER.warning("[INJECTING CTEST] INJECTING pinEventExecutor");
+                pinEventExecutor = injection_map.getString("pinEventExecutor").equals("false")?false:true;
+            }
+        } catch (IOException e) {
+            System.err.println("Exception ");
+        }
         setRecvByteBufAllocator(allocator, channel.metadata());
         this.channel = channel;
     }

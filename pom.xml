@@ -1425,6 +1425,7 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <reportFormat>plain</reportFormat>
+          <redirectTestOutputToFile>true</redirectTestOutputToFile>
           <includes>
             <include>**/*Test*.java</include>
             <include>**/*Benchmark*.java</include>
