@@ -45,10 +45,11 @@ import java.util.logging.Logger;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 // import java.io.FileReader;
-import java.io.IOException;
+// import java.io.IOException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.lang.reflect.Constructor;
 
 /**
  * The default {@link ChannelConfig} implementation.
@@ -66,27 +67,6 @@ public class DefaultChannelConfig implements ChannelConfig {
                     DefaultChannelConfig.class, WriteBufferWaterMark.class, "writeBufferWaterMark");
 
     protected final Channel channel;
-
-    // private JSONParser parser = new JSONParser();
-
-    // private JSONObject jsonHandler() {
-    //     System.err.println("AAAAAAAAAAAAAAAAAAAAAAA");
-    //     try {
-    //         // JSONTokener tokener = new JSONTokener(new FileReader("../../../../../../ctest.json"));
-    //         // return new JSONObject(tokener);
-    //         File file = new File("../../../../../../ctest.json");
-    //         InputStream is = new FileInputStream(file);
-    //         JSONTokener tokener = new JSONTokener(is);
-    //         JSONObject res =  new JSONObject(tokener);
-    //         System.err.println("This json file has length of " + res.length());
-    //         return res;
-
-    //     } catch (IOException e) {
-    //         return null;
-    //     }
-    // }
-
-    // private JSONObject injection_map;
 
     private volatile ByteBufAllocator allocator = ByteBufAllocator.DEFAULT; //incomplete
 
@@ -114,27 +94,45 @@ public class DefaultChannelConfig implements ChannelConfig {
     }
 
     protected DefaultChannelConfig(Channel channel, RecvByteBufAllocator allocator) {
-
+        this.channel = channel;
         try {
-            System.out.println("Working Directory = " + System.getProperty("user.dir"));
-            // JSONTokener tokener = new JSONTokener(new FileReader("../../../../../../ctest.json"));
-            // return new JSONObject(tokener);
+            // System.out.println("Working Directory = " + System.getProperty("user.dir"));
             LOGGER.warning("[INJECTING CTEST] START INJECTION");
             File file = new File("ctest.json");
             InputStream is = new FileInputStream(file);
             JSONTokener tokener = new JSONTokener(is);
             JSONObject injection_map =  new JSONObject(tokener);
+            setRecvByteBufAllocator(allocator, channel.metadata());
+
             if (injection_map.has("connectTimeoutMillis")) {
                 LOGGER.warning("[INJECTING CTEST] INJECTING connectTimeoutMillis");
                 connectTimeoutMillis = Integer.parseInt(injection_map.getString("connectTimeoutMillis"));
+            }
+            if (injection_map.has("maxMessagesPerRead")) {
+                LOGGER.warning("[INJECTING CTEST] INJECTING maxMessagesPerRead");
+                setMaxMessagesPerRead(Integer.parseInt(injection_map.getString("maxMessagesPerRead")));
+            }
+            if (injection_map.has("maxMessagesPerWrite")) {
+                LOGGER.warning("[INJECTING CTEST] INJECTING maxMessagesPerWrite");
+                maxMessagesPerWrite = Integer.parseInt(injection_map.getString("maxMessagesPerWrite"));
             }
             if (injection_map.has("writeSpinCount")) {
                 LOGGER.warning("[INJECTING CTEST] INJECTING writeSpinCount");
                 writeSpinCount = Integer.parseInt(injection_map.getString("writeSpinCount"));
             }
-            if (injection_map.has("maxMessagesPerWrite")) {
-                LOGGER.warning("[INJECTING CTEST] INJECTING maxMessagesPerWrite");
-                maxMessagesPerWrite = Integer.parseInt(injection_map.getString("maxMessagesPerWrite"));
+            if (injection_map.has("allocator")) {
+                LOGGER.warning("[INJECTING CTEST] INJECTING allocator");
+                Class<?> clazz = Class.forName(injection_map.getString("allocator"));
+                Constructor<?> ctor = clazz.getConstructor();
+                Object obj = ctor.newInstance();
+                setAllocator((ByteBufAllocator) obj);
+            }
+            if (injection_map.has("recvByteBufAllocator")) {
+                LOGGER.warning("[INJECTING CTEST] INJECTING recvByteBufAllocator");
+                Class<?> clazz = Class.forName(injection_map.getString("recvByteBufAllocator"));
+                Constructor<?> ctor = clazz.getConstructor();
+                Object obj = ctor.newInstance();
+                setRecvByteBufAllocator((RecvByteBufAllocator) obj);
             }
             if (injection_map.has("autoRead")) {
                 LOGGER.warning("[INJECTING CTEST] INJECTING autoRead");
@@ -144,15 +142,37 @@ public class DefaultChannelConfig implements ChannelConfig {
                 LOGGER.warning("[INJECTING CTEST] INJECTING autoClose");
                 autoClose = injection_map.getString("autoRead").equals("false")?false:true;
             }
+            if (injection_map.has("writeBufferHighWaterMark")) {
+                LOGGER.warning("[INJECTING CTEST] INJECTING writeBufferHighWaterMark");
+                setWriteBufferHighWaterMark(Integer.parseInt(injection_map.getString("writeBufferHighWaterMark")));
+            }
+            if (injection_map.has("writeBufferLowWaterMark")) {
+                LOGGER.warning("[INJECTING CTEST] INJECTING writeBufferLowWaterMark");
+                setWriteBufferLowWaterMark(Integer.parseInt(injection_map.getString("writeBufferLowWaterMark")));
+            }
+            if (injection_map.has("writeBufferWaterMark")) {
+                LOGGER.warning("[INJECTING CTEST] INJECTING writeBufferWaterMark");
+                Class<?> clazz = Class.forName(injection_map.getString("writeBufferWaterMark"));
+                Constructor<?> ctor = clazz.getConstructor(new Class[] { int.class, int.class });
+                Object obj = ctor.newInstance(new Object[] { 32 * 1024, 64 * 1024 });
+                setWriteBufferWaterMark((WriteBufferWaterMark) obj);
+            }
+            if (injection_map.has("messageSizeEstimator")) {
+                LOGGER.warning("[INJECTING CTEST] INJECTING messageSizeEstimator");
+                Class<?> clazz = Class.forName(injection_map.getString("messageSizeEstimator"));
+                Constructor<?> ctor = clazz.getConstructor();
+                Object obj = ctor.newInstance();
+                setMessageSizeEstimator((MessageSizeEstimator) obj);
+            }
             if (injection_map.has("pinEventExecutor")) {
                 LOGGER.warning("[INJECTING CTEST] INJECTING pinEventExecutor");
                 pinEventExecutor = injection_map.getString("pinEventExecutor").equals("false")?false:true;
             }
-        } catch (IOException e) {
-            System.err.println("Exception ");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
         }
-        setRecvByteBufAllocator(allocator, channel.metadata());
-        this.channel = channel;
     }
 
     private String getStackTrace() {
