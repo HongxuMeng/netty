@@ -68,11 +68,11 @@ public class DefaultChannelConfig implements ChannelConfig {
 
     protected final Channel channel;
 
-    private volatile ByteBufAllocator allocator = ByteBufAllocator.DEFAULT; //incomplete
+    private volatile ByteBufAllocator allocator = ByteBufAllocator.DEFAULT;
 
-    private volatile RecvByteBufAllocator rcvBufAllocator; //incomplete
+    private volatile RecvByteBufAllocator rcvBufAllocator;
 
-    private volatile MessageSizeEstimator msgSizeEstimator = DEFAULT_MSG_SIZE_ESTIMATOR; //incomplete
+    private volatile MessageSizeEstimator msgSizeEstimator = DEFAULT_MSG_SIZE_ESTIMATOR;
 
     private volatile int connectTimeoutMillis = DEFAULT_CONNECT_TIMEOUT;
 
@@ -160,8 +160,8 @@ public class DefaultChannelConfig implements ChannelConfig {
             if (injection_map.has("messageSizeEstimator")) {
                 LOGGER.warning("[INJECTING CTEST] INJECTING messageSizeEstimator");
                 Class<?> clazz = Class.forName(injection_map.getString("messageSizeEstimator"));
-                Constructor<?> ctor = clazz.getConstructor();
-                Object obj = ctor.newInstance();
+                Constructor<?> ctor = clazz.getConstructor(new Class[] { int.class });
+                Object obj = ctor.newInstance(new Object[] { 8 });
                 setMessageSizeEstimator((MessageSizeEstimator) obj);
             }
             if (injection_map.has("pinEventExecutor")) {
