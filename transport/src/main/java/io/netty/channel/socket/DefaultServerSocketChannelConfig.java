@@ -29,6 +29,7 @@ import io.netty.util.internal.ObjectUtil;
 import java.net.ServerSocket;
 import java.net.SocketException;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import static io.netty.channel.ChannelOption.SO_BACKLOG;
 import static io.netty.channel.ChannelOption.SO_RCVBUF;
@@ -43,6 +44,7 @@ public class DefaultServerSocketChannelConfig extends DefaultChannelConfig
 
     protected final ServerSocket javaSocket;
     private volatile int backlog = NetUtil.SOMAXCONN;
+    private Logger LOGGER = Logger.getLogger("InfoLogging");
 
     /**
      * Creates a new instance.
@@ -50,6 +52,14 @@ public class DefaultServerSocketChannelConfig extends DefaultChannelConfig
     public DefaultServerSocketChannelConfig(ServerSocketChannel channel, ServerSocket javaSocket) {
         super(channel, new ServerChannelRecvByteBufAllocator());
         this.javaSocket = ObjectUtil.checkNotNull(javaSocket, "javaSocket");
+    }
+
+    private String getStackTrace() {
+        String stacktrace = " ";
+        for (StackTraceElement element : Thread.currentThread().getStackTrace()) {
+          stacktrace = stacktrace.concat(element.getClassName() + "\t");
+        }
+        return stacktrace;
     }
 
     @Override
@@ -93,6 +103,7 @@ public class DefaultServerSocketChannelConfig extends DefaultChannelConfig
     @Override
     public boolean isReuseAddress() {
         try {
+            this.LOGGER.warning("[CTEST][GET-PARAM] reuseAddress");
             return javaSocket.getReuseAddress();
         } catch (SocketException e) {
             throw new ChannelException(e);
@@ -102,6 +113,7 @@ public class DefaultServerSocketChannelConfig extends DefaultChannelConfig
     @Override
     public ServerSocketChannelConfig setReuseAddress(boolean reuseAddress) {
         try {
+            this.LOGGER.warning("[CTEST][SET-PARAM] reuseAddress" + getStackTrace());
             javaSocket.setReuseAddress(reuseAddress);
         } catch (SocketException e) {
             throw new ChannelException(e);
@@ -112,6 +124,7 @@ public class DefaultServerSocketChannelConfig extends DefaultChannelConfig
     @Override
     public int getReceiveBufferSize() {
         try {
+            this.LOGGER.warning("[CTEST][GET-PARAM] receiveBufferSize");
             return javaSocket.getReceiveBufferSize();
         } catch (SocketException e) {
             throw new ChannelException(e);
@@ -121,6 +134,7 @@ public class DefaultServerSocketChannelConfig extends DefaultChannelConfig
     @Override
     public ServerSocketChannelConfig setReceiveBufferSize(int receiveBufferSize) {
         try {
+            this.LOGGER.warning("[CTEST][SET-PARAM] receiveBufferSize" + getStackTrace());
             javaSocket.setReceiveBufferSize(receiveBufferSize);
         } catch (SocketException e) {
             throw new ChannelException(e);
@@ -136,6 +150,7 @@ public class DefaultServerSocketChannelConfig extends DefaultChannelConfig
 
     @Override
     public int getBacklog() {
+        this.LOGGER.warning("[CTEST][GET-PARAM] backlog");
         return backlog;
     }
 

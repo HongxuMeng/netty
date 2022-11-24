@@ -55,7 +55,7 @@ import java.lang.reflect.Constructor;
  * The default {@link ChannelConfig} implementation.
  */
 public class DefaultChannelConfig implements ChannelConfig {
-    Logger LOGGER = Logger.getLogger("InfoLogging");
+    private Logger LOGGER = Logger.getLogger("InfoLogging");
     private static final MessageSizeEstimator DEFAULT_MSG_SIZE_ESTIMATOR = DefaultMessageSizeEstimator.DEFAULT;
 
     private static final int DEFAULT_CONNECT_TIMEOUT = 30000;
