@@ -29,6 +29,7 @@ import io.netty.util.internal.PlatformDependent;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import static io.netty.channel.ChannelOption.SO_RCVBUF;
 import static io.netty.channel.ChannelOption.SO_SNDBUF;
@@ -41,6 +42,7 @@ import static io.netty.channel.sctp.SctpChannelOption.SCTP_NODELAY;
 public class DefaultSctpChannelConfig extends DefaultChannelConfig implements SctpChannelConfig {
 
     private final SctpChannel javaChannel;
+    private Logger LOGGER = Logger.getLogger("InfoLogging");
 
     public DefaultSctpChannelConfig(io.netty.channel.sctp.SctpChannel channel, SctpChannel javaChannel) {
         super(channel);
@@ -54,6 +56,14 @@ public class DefaultSctpChannelConfig extends DefaultChannelConfig implements Sc
                 // Ignore.
             }
         }
+    }
+
+    private String getStackTrace() {
+        String stacktrace = " ";
+        for (StackTraceElement element : Thread.currentThread().getStackTrace()) {
+          stacktrace = stacktrace.concat(element.getClassName() + "\t");
+        }
+        return stacktrace;
     }
 
     @Override
@@ -103,6 +113,7 @@ public class DefaultSctpChannelConfig extends DefaultChannelConfig implements Sc
     @Override
     public boolean isSctpNoDelay() {
         try {
+            this.LOGGER.warning("[CTEST][GET-PARAM] sctpNoDelay");
             return javaChannel.getOption(SctpStandardSocketOptions.SCTP_NODELAY);
         } catch (IOException e) {
             throw new ChannelException(e);
@@ -112,6 +123,7 @@ public class DefaultSctpChannelConfig extends DefaultChannelConfig implements Sc
     @Override
     public SctpChannelConfig setSctpNoDelay(boolean sctpNoDelay) {
         try {
+            this.LOGGER.warning("[CTEST][SET-PARAM] sctpNoDelay" + getStackTrace());
             javaChannel.setOption(SctpStandardSocketOptions.SCTP_NODELAY, sctpNoDelay);
         } catch (IOException e) {
             throw new ChannelException(e);
@@ -122,6 +134,7 @@ public class DefaultSctpChannelConfig extends DefaultChannelConfig implements Sc
     @Override
     public int getSendBufferSize() {
         try {
+            this.LOGGER.warning("[CTEST][GET-PARAM] sendBufferSize");
             return javaChannel.getOption(SctpStandardSocketOptions.SO_SNDBUF);
         } catch (IOException e) {
             throw new ChannelException(e);
@@ -131,6 +144,7 @@ public class DefaultSctpChannelConfig extends DefaultChannelConfig implements Sc
     @Override
     public SctpChannelConfig setSendBufferSize(int sendBufferSize) {
         try {
+            this.LOGGER.warning("[CTEST][SET-PARAM] sendBufferSize" + getStackTrace());
             javaChannel.setOption(SctpStandardSocketOptions.SO_SNDBUF, sendBufferSize);
         } catch (IOException e) {
             throw new ChannelException(e);
@@ -141,6 +155,7 @@ public class DefaultSctpChannelConfig extends DefaultChannelConfig implements Sc
     @Override
     public int getReceiveBufferSize() {
         try {
+            this.LOGGER.warning("[CTEST][GET-PARAM] receiveBufferSize");
             return javaChannel.getOption(SctpStandardSocketOptions.SO_RCVBUF);
         } catch (IOException e) {
             throw new ChannelException(e);
@@ -150,6 +165,7 @@ public class DefaultSctpChannelConfig extends DefaultChannelConfig implements Sc
     @Override
     public SctpChannelConfig setReceiveBufferSize(int receiveBufferSize) {
         try {
+            this.LOGGER.warning("[CTEST][SET-PARAM] receiveBufferSize" + getStackTrace());
             javaChannel.setOption(SctpStandardSocketOptions.SO_RCVBUF, receiveBufferSize);
         } catch (IOException e) {
             throw new ChannelException(e);
@@ -160,6 +176,7 @@ public class DefaultSctpChannelConfig extends DefaultChannelConfig implements Sc
     @Override
     public SctpStandardSocketOptions.InitMaxStreams getInitMaxStreams() {
         try {
+            this.LOGGER.warning("[CTEST][GET-PARAM] initMaxStreams");
             return javaChannel.getOption(SctpStandardSocketOptions.SCTP_INIT_MAXSTREAMS);
         } catch (IOException e) {
             throw new ChannelException(e);
