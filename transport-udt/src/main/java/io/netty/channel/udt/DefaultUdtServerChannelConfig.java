@@ -36,7 +36,7 @@ import static io.netty.channel.ChannelOption.SO_BACKLOG;
 @Deprecated
 public class DefaultUdtServerChannelConfig extends DefaultUdtChannelConfig
         implements UdtServerChannelConfig {
-    
+
     private Logger LOGGER = Logger.getLogger("InfoLogging");
     private volatile int backlog = 64;
 
@@ -46,6 +46,14 @@ public class DefaultUdtServerChannelConfig extends DefaultUdtChannelConfig
         if (apply) {
             apply(channelUDT);
         }
+    }
+
+    private String getStackTrace() {
+        String stacktrace = " ";
+        for (StackTraceElement element : Thread.currentThread().getStackTrace()) {
+          stacktrace = stacktrace.concat(element.getClassName() + "\t");
+        }
+        return stacktrace;
     }
 
     @Override
@@ -75,7 +83,7 @@ public class DefaultUdtServerChannelConfig extends DefaultUdtChannelConfig
 
     @Override
     public UdtServerChannelConfig setBacklog(final int backlog) {
-        this.LOGGER.warning("[CTEST][SET-PARAM] backlog" + super.getStackTrace());
+        this.LOGGER.warning("[CTEST][SET-PARAM] backlog" + getStackTrace());
         this.backlog = backlog;
         return this;
     }
