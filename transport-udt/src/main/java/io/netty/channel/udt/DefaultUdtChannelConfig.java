@@ -27,6 +27,7 @@ import io.netty.channel.WriteBufferWaterMark;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import static io.netty.channel.ChannelOption.SO_LINGER;
 import static io.netty.channel.ChannelOption.SO_RCVBUF;
@@ -45,6 +46,8 @@ import static io.netty.channel.udt.UdtChannelOption.SYSTEM_SEND_BUFFER_SIZE;
 @Deprecated
 public class DefaultUdtChannelConfig extends DefaultChannelConfig implements
         UdtChannelConfig {
+
+    private Logger LOGGER = Logger.getLogger("InfoLogging");
 
     private static final int K = 1024;
     private static final int M = K * K;
@@ -92,6 +95,7 @@ public class DefaultUdtChannelConfig extends DefaultChannelConfig implements
 
     @Override
     public int getProtocolReceiveBufferSize() {
+        this.LOGGER.warning("[CTEST][GET-PARAM] protocolReceiveBufferSize");
         return protocolReceiveBufferSize;
     }
 
@@ -125,6 +129,14 @@ public class DefaultUdtChannelConfig extends DefaultChannelConfig implements
         return super.getOption(option);
     }
 
+    private String getStackTrace() {
+        String stacktrace = " ";
+        for (StackTraceElement element : Thread.currentThread().getStackTrace()) {
+          stacktrace = stacktrace.concat(element.getClassName() + "\t");
+        }
+        return stacktrace;
+    }
+
     @Override
     public Map<ChannelOption<?>, Object> getOptions() {
         return getOptions(super.getOptions(), PROTOCOL_RECEIVE_BUFFER_SIZE,
@@ -135,26 +147,31 @@ public class DefaultUdtChannelConfig extends DefaultChannelConfig implements
 
     @Override
     public int getReceiveBufferSize() {
+        this.LOGGER.warning("[CTEST][GET-PARAM] receiveBufferSize");
         return allocatorReceiveBufferSize;
     }
 
     @Override
     public int getSendBufferSize() {
+        this.LOGGER.warning("[CTEST][GET-PARAM] sendBufferSize");
         return allocatorSendBufferSize;
     }
 
     @Override
     public int getSoLinger() {
+        this.LOGGER.warning("[CTEST][GET-PARAM] soLinger");
         return soLinger;
     }
 
     @Override
     public boolean isReuseAddress() {
+        this.LOGGER.warning("[CTEST][GET-PARAM] reuseAddress");
         return reuseAddress;
     }
 
     @Override
     public UdtChannelConfig setProtocolReceiveBufferSize(final int protocolReceiveBufferSize) {
+        this.LOGGER.warning("[CTEST][SET-PARAM] protocolReceiveBufferSize" + getStackTrace());
         this.protocolReceiveBufferSize = protocolReceiveBufferSize;
         return this;
     }
@@ -186,61 +203,71 @@ public class DefaultUdtChannelConfig extends DefaultChannelConfig implements
 
     @Override
     public UdtChannelConfig setReceiveBufferSize(final int receiveBufferSize) {
+        this.LOGGER.warning("[CTEST][SET-PARAM] receiveBufferSize" + getStackTrace());
         allocatorReceiveBufferSize = receiveBufferSize;
         return this;
     }
 
     @Override
     public UdtChannelConfig setReuseAddress(final boolean reuseAddress) {
+        this.LOGGER.warning("[CTEST][SET-PARAM] reuseAddress" + getStackTrace());
         this.reuseAddress = reuseAddress;
         return this;
     }
 
     @Override
     public UdtChannelConfig setSendBufferSize(final int sendBufferSize) {
+        this.LOGGER.warning("[CTEST][SET-PARAM] sendBufferSize" + getStackTrace());
         allocatorSendBufferSize = sendBufferSize;
         return this;
     }
 
     @Override
     public UdtChannelConfig setSoLinger(final int soLinger) {
+        this.LOGGER.warning("[CTEST][SET-PARAM] soLinger" + getStackTrace());
         this.soLinger = soLinger;
         return this;
     }
 
     @Override
     public int getSystemReceiveBufferSize() {
+        this.LOGGER.warning("[CTEST][GET-PARAM] systemReceiveBufferSize");
         return systemReceiveBufferSize;
     }
 
     @Override
-    public UdtChannelConfig setSystemSendBufferSize(
+    public UdtChannelConfig setSystemReceiveBufferSize(
             final int systemReceiveBufferSize) {
+        this.LOGGER.warning("[CTEST][SET-PARAM] systemReceiveBufferSize" + getStackTrace());
         this.systemReceiveBufferSize = systemReceiveBufferSize;
         return this;
     }
 
     @Override
     public int getProtocolSendBufferSize() {
+        this.LOGGER.warning("[CTEST][GET-PARAM] protocolSendBufferSize");
         return protocolSendBufferSize;
     }
 
     @Override
     public UdtChannelConfig setProtocolSendBufferSize(
             final int protocolSendBufferSize) {
+        this.LOGGER.warning("[CTEST][SET-PARAM] protocolSendBufferSize" + getStackTrace());
         this.protocolSendBufferSize = protocolSendBufferSize;
         return this;
     }
 
     @Override
-    public UdtChannelConfig setSystemReceiveBufferSize(
+    public UdtChannelConfig setSystemSendBufferSize(
             final int systemSendBufferSize) {
+        this.LOGGER.warning("[CTEST][SET-PARAM] systemReceiveBufferSize" + getStackTrace());
         this.systemSendBufferSize = systemSendBufferSize;
         return this;
     }
 
     @Override
     public int getSystemSendBufferSize() {
+        this.LOGGER.warning("[CTEST][GET-PARAM] systemSendBufferSize");
         return systemSendBufferSize;
     }
 

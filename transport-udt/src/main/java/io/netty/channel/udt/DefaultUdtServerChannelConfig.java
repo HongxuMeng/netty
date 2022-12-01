@@ -24,6 +24,7 @@ import io.netty.channel.WriteBufferWaterMark;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import static io.netty.channel.ChannelOption.SO_BACKLOG;
 
@@ -35,7 +36,8 @@ import static io.netty.channel.ChannelOption.SO_BACKLOG;
 @Deprecated
 public class DefaultUdtServerChannelConfig extends DefaultUdtChannelConfig
         implements UdtServerChannelConfig {
-
+    
+    private Logger LOGGER = Logger.getLogger("InfoLogging");
     private volatile int backlog = 64;
 
     public DefaultUdtServerChannelConfig(
@@ -53,6 +55,7 @@ public class DefaultUdtServerChannelConfig extends DefaultUdtChannelConfig
 
     @Override
     public int getBacklog() {
+        this.LOGGER.warning("[CTEST][GET-PARAM] getBacklog");
         return backlog;
     }
 
@@ -72,6 +75,7 @@ public class DefaultUdtServerChannelConfig extends DefaultUdtChannelConfig
 
     @Override
     public UdtServerChannelConfig setBacklog(final int backlog) {
+        this.LOGGER.warning("[CTEST][SET-PARAM] backlog" + super.getStackTrace());
         this.backlog = backlog;
         return this;
     }
