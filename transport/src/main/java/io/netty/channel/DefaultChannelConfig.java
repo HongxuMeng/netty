@@ -140,7 +140,7 @@ public class DefaultChannelConfig implements ChannelConfig {
             }
             if (injection_map.has("autoClose")) {
                 LOGGER.warning("[INJECTING CTEST] INJECTING autoClose");
-                autoClose = injection_map.getString("autoRead").equals("false")?false:true;
+                autoClose = injection_map.getString("autoClose").equals("false")?false:true;
             }
             if (injection_map.has("writeBufferHighWaterMark")) {
                 LOGGER.warning("[INJECTING CTEST] INJECTING writeBufferHighWaterMark");
