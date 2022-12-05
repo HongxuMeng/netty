@@ -98,7 +98,7 @@ public class DefaultUdtChannelConfig extends DefaultChannelConfig implements
             }
             if (injection_map.has("reuseAddress")) {
                 LOGGER.warning("[INJECTING CTEST] INJECTING reuseAddress");
-                setReuseAddress(injection_map.getString("autoRead").equals("false")?false:true);
+                setReuseAddress(injection_map.getString("reuseAddress").equals("false")?false:true);
             }
             if (injection_map.has("systemReceiveBufferSize")) {
                 LOGGER.warning("[INJECTING CTEST] INJECTING systemReceiveBufferSize");
