@@ -25,6 +25,13 @@ import io.netty.channel.WriteBufferWaterMark;
 import java.io.IOException;
 import java.util.Map;
 
+import java.util.logging.Logger;
+import org.json.JSONObject;
+import org.json.JSONTokener;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+
 import static io.netty.channel.ChannelOption.SO_BACKLOG;
 
 /**
@@ -36,11 +43,26 @@ import static io.netty.channel.ChannelOption.SO_BACKLOG;
 public class DefaultUdtServerChannelConfig extends DefaultUdtChannelConfig
         implements UdtServerChannelConfig {
 
+    private Logger LOGGER = Logger.getLogger("InfoLogging");
     private volatile int backlog = 64;
 
     public DefaultUdtServerChannelConfig(
             final UdtChannel channel, final ChannelUDT channelUDT, final boolean apply) throws IOException {
         super(channel, channelUDT, apply);
+        try {
+            File file = new File("ctest.json");
+            InputStream is = new FileInputStream(file);
+            JSONTokener tokener = new JSONTokener(is);
+            JSONObject injection_map =  new JSONObject(tokener);
+
+            if (injection_map.has("backlog")) {
+                LOGGER.warning("[INJECTING CTEST] INJECTING backlog");
+                setBacklog(Integer.parseInt(injection_map.getString("backlog")));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
         if (apply) {
             apply(channelUDT);
         }

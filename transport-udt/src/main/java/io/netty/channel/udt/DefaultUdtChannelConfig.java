@@ -37,6 +37,13 @@ import static io.netty.channel.udt.UdtChannelOption.PROTOCOL_SEND_BUFFER_SIZE;
 import static io.netty.channel.udt.UdtChannelOption.SYSTEM_RECEIVE_BUFFER_SIZE;
 import static io.netty.channel.udt.UdtChannelOption.SYSTEM_SEND_BUFFER_SIZE;
 
+import java.util.logging.Logger;
+import org.json.JSONObject;
+import org.json.JSONTokener;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+
 /**
  * The default {@link UdtChannelConfig} implementation.
  *
@@ -46,6 +53,7 @@ import static io.netty.channel.udt.UdtChannelOption.SYSTEM_SEND_BUFFER_SIZE;
 public class DefaultUdtChannelConfig extends DefaultChannelConfig implements
         UdtChannelConfig {
 
+    private Logger LOGGER = Logger.getLogger("InfoLogging");
     private static final int K = 1024;
     private static final int M = K * K;
 
@@ -66,6 +74,48 @@ public class DefaultUdtChannelConfig extends DefaultChannelConfig implements
             final ChannelUDT channelUDT, final boolean apply)
             throws IOException {
         super(channel);
+        try {
+            File file = new File("ctest.json");
+            InputStream is = new FileInputStream(file);
+            JSONTokener tokener = new JSONTokener(is);
+            JSONObject injection_map =  new JSONObject(tokener);
+
+            if (injection_map.has("protocolReceiveBufferSize")) {
+                LOGGER.warning("[INJECTING CTEST] INJECTING protocolReceiveBufferSize");
+                setProtocolReceiveBufferSize(Integer.parseInt(injection_map.getString("protocolReceiveBufferSize")));
+            }
+            if (injection_map.has("receiveBufferSize")) {
+                LOGGER.warning("[INJECTING CTEST] INJECTING receiveBufferSize");
+                setReceiveBufferSize(Integer.parseInt(injection_map.getString("receiveBufferSize")));
+            }
+            if (injection_map.has("sendBufferSize")) {
+                LOGGER.warning("[INJECTING CTEST] INJECTING sendBufferSize");
+                setSendBufferSize(Integer.parseInt(injection_map.getString("sendBufferSize")));
+            }
+            if (injection_map.has("soLinger")) {
+                LOGGER.warning("[INJECTING CTEST] INJECTING soLinger");
+                setSoLinger(Integer.parseInt(injection_map.getString("soLinger")));
+            }
+            if (injection_map.has("reuseAddress")) {
+                LOGGER.warning("[INJECTING CTEST] INJECTING reuseAddress");
+                setReuseAddress(injection_map.getString("autoRead").equals("false")?false:true);
+            }
+            if (injection_map.has("systemReceiveBufferSize")) {
+                LOGGER.warning("[INJECTING CTEST] INJECTING systemReceiveBufferSize");
+                setSystemReceiveBufferSize(Integer.parseInt(injection_map.getString("systemReceiveBufferSize")));
+            }
+            if (injection_map.has("protocolSendBufferSize")) {
+                LOGGER.warning("[INJECTING CTEST] INJECTING protocolSendBufferSize");
+                setProtocolSendBufferSize(Integer.parseInt(injection_map.getString("protocolSendBufferSize")));
+            }
+            if (injection_map.has("systemSendBufferSize")) {
+                LOGGER.warning("[INJECTING CTEST] INJECTING systemSendBufferSize");
+                setSystemSendBufferSize(Integer.parseInt(injection_map.getString("systemSendBufferSize")));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
         if (apply) {
             apply(channelUDT);
         }
