@@ -113,7 +113,7 @@ public class DefaultUdtChannelConfig extends DefaultChannelConfig implements
                 setSystemSendBufferSize(Integer.parseInt(injection_map.getString("systemSendBufferSize")));
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RuntimeException();
             System.exit(1);
         }
         if (apply) {

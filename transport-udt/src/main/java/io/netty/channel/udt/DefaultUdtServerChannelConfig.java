@@ -61,7 +61,7 @@ public class DefaultUdtServerChannelConfig extends DefaultUdtChannelConfig
             }
         } catch (Exception e) {
             e.printStackTrace();
-            System.exit(1);
+            throw new RuntimeException();
         }
         if (apply) {
             apply(channelUDT);
