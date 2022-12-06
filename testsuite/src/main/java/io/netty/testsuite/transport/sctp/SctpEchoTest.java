@@ -119,7 +119,11 @@ public class SctpEchoTest extends AbstractSctpTest {
                 break;
             }
 
-            Thread.sleep(50);
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException e) {
+                // Ignore.
+            }
         }
 
         while (sh.counter < data.length) {
@@ -130,7 +134,11 @@ public class SctpEchoTest extends AbstractSctpTest {
                 break;
             }
 
-            Thread.sleep(50);
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException e) {
+                // Ignore.
+            }
         }
 
         sh.channel.close().sync();

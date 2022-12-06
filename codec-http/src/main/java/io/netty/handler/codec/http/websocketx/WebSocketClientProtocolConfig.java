@@ -34,7 +34,6 @@ public final class WebSocketClientProtocolConfig {
     static final boolean DEFAULT_ALLOW_MASK_MISMATCH = false;
     static final boolean DEFAULT_HANDLE_CLOSE_FRAMES = true;
     static final boolean DEFAULT_DROP_PONG_FRAMES = true;
-    static final boolean DEFAULT_GENERATE_ORIGIN_HEADER = true;
 
     private final URI webSocketUri;
     private final String subprotocol;
@@ -50,7 +49,6 @@ public final class WebSocketClientProtocolConfig {
     private final long handshakeTimeoutMillis;
     private final long forceCloseTimeoutMillis;
     private final boolean absoluteUpgradeUrl;
-    private final boolean generateOriginHeader;
 
     private WebSocketClientProtocolConfig(
         URI webSocketUri,
@@ -66,8 +64,7 @@ public final class WebSocketClientProtocolConfig {
         boolean dropPongFrames,
         long handshakeTimeoutMillis,
         long forceCloseTimeoutMillis,
-        boolean absoluteUpgradeUrl,
-        boolean generateOriginHeader
+        boolean absoluteUpgradeUrl
     ) {
         this.webSocketUri = webSocketUri;
         this.subprotocol = subprotocol;
@@ -83,7 +80,6 @@ public final class WebSocketClientProtocolConfig {
         this.dropPongFrames = dropPongFrames;
         this.handshakeTimeoutMillis = checkPositive(handshakeTimeoutMillis, "handshakeTimeoutMillis");
         this.absoluteUpgradeUrl = absoluteUpgradeUrl;
-        this.generateOriginHeader = generateOriginHeader;
     }
 
     public URI webSocketUri() {
@@ -142,29 +138,24 @@ public final class WebSocketClientProtocolConfig {
         return absoluteUpgradeUrl;
     }
 
-    public boolean generateOriginHeader() {
-        return generateOriginHeader;
-    }
-
     @Override
     public String toString() {
         return "WebSocketClientProtocolConfig" +
-               " {webSocketUri=" + webSocketUri +
-               ", subprotocol=" + subprotocol +
-               ", version=" + version +
-               ", allowExtensions=" + allowExtensions +
-               ", customHeaders=" + customHeaders +
-               ", maxFramePayloadLength=" + maxFramePayloadLength +
-               ", performMasking=" + performMasking +
-               ", allowMaskMismatch=" + allowMaskMismatch +
-               ", handleCloseFrames=" + handleCloseFrames +
-               ", sendCloseFrame=" + sendCloseFrame +
-               ", dropPongFrames=" + dropPongFrames +
-               ", handshakeTimeoutMillis=" + handshakeTimeoutMillis +
-               ", forceCloseTimeoutMillis=" + forceCloseTimeoutMillis +
-               ", absoluteUpgradeUrl=" + absoluteUpgradeUrl +
-               ", generateOriginHeader=" + generateOriginHeader +
-               "}";
+            " {webSocketUri=" + webSocketUri +
+            ", subprotocol=" + subprotocol +
+            ", version=" + version +
+            ", allowExtensions=" + allowExtensions +
+            ", customHeaders=" + customHeaders +
+            ", maxFramePayloadLength=" + maxFramePayloadLength +
+            ", performMasking=" + performMasking +
+            ", allowMaskMismatch=" + allowMaskMismatch +
+            ", handleCloseFrames=" + handleCloseFrames +
+            ", sendCloseFrame=" + sendCloseFrame +
+            ", dropPongFrames=" + dropPongFrames +
+            ", handshakeTimeoutMillis=" + handshakeTimeoutMillis +
+            ", forceCloseTimeoutMillis=" + forceCloseTimeoutMillis +
+            ", absoluteUpgradeUrl=" + absoluteUpgradeUrl +
+            "}";
     }
 
     public Builder toBuilder() {
@@ -186,8 +177,7 @@ public final class WebSocketClientProtocolConfig {
                 DEFAULT_DROP_PONG_FRAMES,
                 DEFAULT_HANDSHAKE_TIMEOUT_MILLIS,
                 -1,
-                false,
-                DEFAULT_GENERATE_ORIGIN_HEADER);
+                false);
     }
 
     public static final class Builder {
@@ -205,7 +195,6 @@ public final class WebSocketClientProtocolConfig {
         private long handshakeTimeoutMillis;
         private long forceCloseTimeoutMillis;
         private boolean absoluteUpgradeUrl;
-        private boolean generateOriginHeader;
 
         private Builder(WebSocketClientProtocolConfig clientConfig) {
             this(ObjectUtil.checkNotNull(clientConfig, "clientConfig").webSocketUri(),
@@ -221,8 +210,7 @@ public final class WebSocketClientProtocolConfig {
                  clientConfig.dropPongFrames(),
                  clientConfig.handshakeTimeoutMillis(),
                  clientConfig.forceCloseTimeoutMillis(),
-                 clientConfig.absoluteUpgradeUrl(),
-                 clientConfig.generateOriginHeader());
+                 clientConfig.absoluteUpgradeUrl());
         }
 
         private Builder(URI webSocketUri,
@@ -238,8 +226,7 @@ public final class WebSocketClientProtocolConfig {
                         boolean dropPongFrames,
                         long handshakeTimeoutMillis,
                         long forceCloseTimeoutMillis,
-                        boolean absoluteUpgradeUrl,
-                        boolean generateOriginHeader) {
+                        boolean absoluteUpgradeUrl) {
             this.webSocketUri = webSocketUri;
             this.subprotocol = subprotocol;
             this.version = version;
@@ -254,7 +241,6 @@ public final class WebSocketClientProtocolConfig {
             this.handshakeTimeoutMillis = handshakeTimeoutMillis;
             this.forceCloseTimeoutMillis = forceCloseTimeoutMillis;
             this.absoluteUpgradeUrl = absoluteUpgradeUrl;
-            this.generateOriginHeader = generateOriginHeader;
         }
 
         /**
@@ -382,16 +368,6 @@ public final class WebSocketClientProtocolConfig {
         }
 
         /**
-         * Allows to generate the `Origin`|`Sec-WebSocket-Origin` header value for handshake request
-         * according the given webSocketURI. Usually it's not necessary and can be disabled,
-         * but for backward compatibility is set to {@code true} as default.
-         */
-        public Builder generateOriginHeader(boolean generateOriginHeader) {
-            this.generateOriginHeader = generateOriginHeader;
-            return this;
-        }
-
-        /**
          * Build unmodifiable client protocol configuration.
          */
         public WebSocketClientProtocolConfig build() {
@@ -409,8 +385,7 @@ public final class WebSocketClientProtocolConfig {
                 dropPongFrames,
                 handshakeTimeoutMillis,
                 forceCloseTimeoutMillis,
-                absoluteUpgradeUrl,
-                generateOriginHeader
+                absoluteUpgradeUrl
             );
         }
     }

@@ -22,7 +22,9 @@ public class NativeImageHandlerMetadataTest {
 
     @Test
     public void collectAndCompareMetadata() {
-        ChannelHandlerMetadataUtil.generateMetadata("io.netty.handler.codec.haproxy");
+        ChannelHandlerMetadataUtil.generateMetadata(
+                "haproxy-handlers/reflect-config.json",
+                "io.netty.handler.codec.haproxy");
     }
 
 }

@@ -84,7 +84,7 @@ public final class ThreadExecutorMap {
      * when called from within the {@link Runnable} during execution.
      */
     public static ThreadFactory apply(final ThreadFactory threadFactory, final EventExecutor eventExecutor) {
-        ObjectUtil.checkNotNull(threadFactory, "threadFactory");
+        ObjectUtil.checkNotNull(threadFactory, "command");
         ObjectUtil.checkNotNull(eventExecutor, "eventExecutor");
         return new ThreadFactory() {
             @Override

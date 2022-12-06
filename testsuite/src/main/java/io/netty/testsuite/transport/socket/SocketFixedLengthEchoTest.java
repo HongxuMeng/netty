@@ -109,7 +109,11 @@ public class SocketFixedLengthEchoTest extends AbstractSocketTest {
                 break;
             }
 
-            Thread.sleep(50);
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException e) {
+                // Ignore.
+            }
         }
 
         while (sh.counter < data.length) {
@@ -120,7 +124,11 @@ public class SocketFixedLengthEchoTest extends AbstractSocketTest {
                 break;
             }
 
-            Thread.sleep(50);
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException e) {
+                // Ignore.
+            }
         }
 
         sh.channel.close().sync();

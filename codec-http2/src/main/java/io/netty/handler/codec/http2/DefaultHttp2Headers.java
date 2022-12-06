@@ -79,6 +79,9 @@ public class DefaultHttp2Headers
                     PlatformDependent.throwException(connectionError(
                             PROTOCOL_ERROR, "Invalid HTTP/2 pseudo-header '%s' encountered.", name));
                 }
+            } else if (HttpHeaderValidationUtil.isConnectionHeader(name, true)) {
+                PlatformDependent.throwException(connectionError(
+                        PROTOCOL_ERROR, "Illegal connection-specific header '%s' encountered.", name));
             }
         }
     };
@@ -173,7 +176,12 @@ public class DefaultHttp2Headers
 
     @Override
     protected void validateValue(ValueValidator<CharSequence> validator, CharSequence name, CharSequence value) {
-        // This method has a noop override for backward compatibility, see https://github.com/netty/netty/pull/12975
+        if (nameValidator() == HTTP2_NAME_VALIDATOR) {
+            if (HttpHeaderValidationUtil.isTeNotTrailers(name, value)) {
+                PlatformDependent.throwException(connectionError(PROTOCOL_ERROR,
+                        "Illegal value specified for the 'TE' header (only 'trailers' is allowed)."));
+            }
+        }
         super.validateValue(validator, name, value);
     }
 

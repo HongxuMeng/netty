@@ -266,10 +266,8 @@ public final class HttpClientCodec extends CombinedChannelDuplexHandler<HttpResp
             // request / response pairs in sync.
             HttpMethod method = queue.poll();
 
-            final HttpResponseStatus status = ((HttpResponse) msg).status();
-            final HttpStatusClass statusClass = status.codeClass();
-            final int statusCode = status.code();
-            if (statusClass == HttpStatusClass.INFORMATIONAL) {
+            final int statusCode = ((HttpResponse) msg).status().code();
+            if (statusCode >= 100 && statusCode < 200) {
                 // An informational response should be excluded from paired comparison.
                 // Just delegate to super method which has all the needed handling.
                 return super.isContentAlwaysEmpty(msg);

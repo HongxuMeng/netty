@@ -77,7 +77,11 @@ public class SocketCancelWriteTest extends AbstractSocketTest {
             if (ch.exception.get() != null) {
                 break;
             }
-            Thread.sleep(50);
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException ignore) {
+                // Ignore.
+            }
         }
         sh.channel.close().sync();
         ch.channel.close().sync();

@@ -15,7 +15,7 @@
  */
 package io.netty.handler.codec.xml;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -23,7 +23,7 @@ import java.util.List;
  */
 public class XmlElementStart extends XmlElement {
 
-    private final List<XmlAttribute> attributes = new ArrayList<XmlAttribute>();
+    private final List<XmlAttribute> attributes = new LinkedList<XmlAttribute>();
 
     public XmlElementStart(String name, String namespace, String prefix) {
         super(name, namespace, prefix);

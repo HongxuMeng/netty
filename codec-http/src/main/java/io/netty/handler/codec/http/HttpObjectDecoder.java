@@ -522,16 +522,14 @@ public abstract class HttpObjectDecoder extends ByteToMessageDecoder {
     protected boolean isContentAlwaysEmpty(HttpMessage msg) {
         if (msg instanceof HttpResponse) {
             HttpResponse res = (HttpResponse) msg;
-            final HttpResponseStatus status = res.status();
-            final int code = status.code();
-            final HttpStatusClass statusClass = status.codeClass();
+            int code = res.status().code();
 
             // Correctly handle return codes of 1xx.
             //
             // See:
             //     - https://www.w3.org/Protocols/rfc2616/rfc2616-sec4.html Section 4.4
             //     - https://github.com/netty/netty/issues/222
-            if (statusClass == HttpStatusClass.INFORMATIONAL) {
+            if (code >= 100 && code < 200) {
                 // One exception: Hixie 76 websocket handshake response
                 return !(code == 101 && !res.headers().contains(HttpHeaderNames.SEC_WEBSOCKET_ACCEPT)
                          && res.headers().contains(HttpHeaderNames.UPGRADE, HttpHeaderValues.WEBSOCKET, true));
@@ -675,11 +673,7 @@ public abstract class HttpObjectDecoder extends ByteToMessageDecoder {
             contentLength = HttpUtil.normalizeAndGetContentLength(contentLengthFields,
                     isHttp10OrEarlier, allowDuplicateContentLengths);
             if (contentLength != -1) {
-                String lengthValue = contentLengthFields.get(0).trim();
-                if (contentLengthFields.size() > 1 || // don't unnecessarily re-order headers
-                        !lengthValue.equals(Long.toString(contentLength))) {
-                    headers.set(HttpHeaderNames.CONTENT_LENGTH, contentLength);
-                }
+                headers.set(HttpHeaderNames.CONTENT_LENGTH, contentLength);
             }
         }
 

@@ -47,7 +47,6 @@ import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.MembershipKey;
 import java.nio.channels.SelectionKey;
-import java.nio.channels.UnresolvedAddressException;
 import java.nio.channels.spi.SelectorProvider;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -301,18 +300,10 @@ public final class NioDatagramChannel
         return writtenBytes > 0;
     }
 
-    private static void checkUnresolved(AddressedEnvelope<?, ?> envelope) {
-        if (envelope.recipient() instanceof InetSocketAddress
-                && (((InetSocketAddress) envelope.recipient()).isUnresolved())) {
-            throw new UnresolvedAddressException();
-        }
-    }
-
     @Override
     protected Object filterOutboundMessage(Object msg) {
         if (msg instanceof DatagramPacket) {
             DatagramPacket p = (DatagramPacket) msg;
-            checkUnresolved(p);
             ByteBuf content = p.content();
             if (isSingleDirectBuffer(content)) {
                 return p;
@@ -331,7 +322,6 @@ public final class NioDatagramChannel
         if (msg instanceof AddressedEnvelope) {
             @SuppressWarnings("unchecked")
             AddressedEnvelope<Object, SocketAddress> e = (AddressedEnvelope<Object, SocketAddress>) msg;
-            checkUnresolved(e);
             if (e.content() instanceof ByteBuf) {
                 ByteBuf content = (ByteBuf) e.content();
                 if (isSingleDirectBuffer(content)) {

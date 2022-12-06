@@ -73,6 +73,10 @@ final class PoolSubpage<T> implements PoolSubpageMetric {
             if ((maxNumElems & 63) != 0) {
                 bitmapLength ++;
             }
+
+            for (int i = 0; i < bitmapLength; i ++) {
+                bitmap[i] = 0;
+            }
         }
         addToPool(head);
     }

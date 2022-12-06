@@ -15,7 +15,6 @@
  */
 package io.netty.handler.codec.socksx.v4;
 
-import io.netty.buffer.ByteBuf;
 import io.netty.channel.embedded.EmbeddedChannel;
 
 final class Socks4CommonTestUtils {
@@ -34,7 +33,7 @@ final class Socks4CommonTestUtils {
             out = new EmbeddedChannel(Socks4ServerEncoder.INSTANCE);
         }
         out.writeOutbound(msg);
-        embedder.writeInbound(out.<ByteBuf>readOutbound());
+        embedder.writeInbound(out.readOutbound());
         out.finish();
     }
 }

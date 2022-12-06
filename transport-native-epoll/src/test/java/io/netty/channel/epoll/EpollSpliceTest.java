@@ -150,7 +150,11 @@ public class EpollSpliceTest {
                 break;
             }
 
-            Thread.sleep(50);
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException e) {
+                // Ignore.
+            }
         }
 
         while (sh.counter < data.length) {
@@ -161,7 +165,11 @@ public class EpollSpliceTest {
                 break;
             }
 
-            Thread.sleep(50);
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException e) {
+                // Ignore.
+            }
         }
 
         sh.channel.close().sync();
@@ -215,7 +223,11 @@ public class EpollSpliceTest {
             if (sh.exception.get() != null) {
                 break;
             }
-            Thread.sleep(50);
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException e) {
+                // Ignore.
+            }
         }
 
         sc.close().sync();

@@ -160,10 +160,6 @@ final class WebSocketUtil {
         return (int) (minimum + fraction * (maximum - minimum));
     }
 
-    static int byteAtIndex(int mask, int index) {
-        return (mask >> 8 * (3 - index)) & 0xFF;
-    }
-
     /**
      * A private constructor to ensure that instances of this class cannot be made
      */

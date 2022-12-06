@@ -198,7 +198,11 @@ public class SocketStartTlsTest extends AbstractSocketTest {
                 break;
             }
 
-            Thread.sleep(50);
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException e) {
+                // Ignore.
+            }
         }
 
         while (sh.channel.isActive()) {
@@ -209,7 +213,11 @@ public class SocketStartTlsTest extends AbstractSocketTest {
                 break;
             }
 
-            Thread.sleep(50);
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException e) {
+                // Ignore.
+            }
         }
 
         sh.channel.close().awaitUninterruptibly();

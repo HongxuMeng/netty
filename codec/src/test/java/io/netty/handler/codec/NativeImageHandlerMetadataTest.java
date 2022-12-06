@@ -23,7 +23,9 @@ public class NativeImageHandlerMetadataTest {
 
     @Test
     public void collectAndCompareMetadata() {
-        ChannelHandlerMetadataUtil.generateMetadata("io.netty.handler.codec");
+        ChannelHandlerMetadataUtil.generateMetadata(
+                "codec-handlers/reflect-config.json",
+                "io.netty.handler.codec");
     }
 
 }

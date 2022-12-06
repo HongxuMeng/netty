@@ -162,11 +162,7 @@ abstract class AbstractKQueueChannel extends AbstractChannel implements UnixChan
         // Make sure we unregister our filters from kqueue!
         readFilter(false);
         writeFilter(false);
-        clearRdHup0();
-    }
-
-    private void clearRdHup0() {
-        evSet0(Native.EVFILT_SOCK, Native.EV_DELETE_DISABLE, Native.NOTE_RDHUP);
+        evSet0(Native.EVFILT_SOCK, Native.EV_DELETE, 0);
     }
 
     @Override
@@ -467,12 +463,11 @@ abstract class AbstractKQueueChannel extends AbstractChannel implements UnixChan
                         // We attempted to shutdown and failed, which means the input has already effectively been
                         // shutdown.
                     }
-                    clearReadFilter0();
                     pipeline().fireUserEventTriggered(ChannelInputShutdownEvent.INSTANCE);
                 } else {
                     close(voidPromise());
                 }
-            } else if (!readEOF && !inputClosedSeenErrorOnRead) {
+            } else if (!readEOF) {
                 inputClosedSeenErrorOnRead = true;
                 pipeline().fireUserEventTriggered(ChannelInputShutdownReadComplete.INSTANCE);
             }
@@ -492,9 +487,6 @@ abstract class AbstractKQueueChannel extends AbstractChannel implements UnixChan
                 // Just to be safe make sure the input marked as closed.
                 shutdownInput(true);
             }
-
-            // Clear the RDHUP flag to prevent continuously getting woken up on this event.
-            clearRdHup0();
         }
 
         @Override

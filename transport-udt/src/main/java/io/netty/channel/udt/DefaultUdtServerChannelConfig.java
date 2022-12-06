@@ -140,15 +140,15 @@ public class DefaultUdtServerChannelConfig extends DefaultUdtChannelConfig
 
     @Override
     public UdtServerChannelConfig setSystemReceiveBufferSize(
-            final int systemReceiveBufferSize) {
-        super.setSystemReceiveBufferSize(systemReceiveBufferSize);
+            final int systemSendBufferSize) {
+        super.setSystemReceiveBufferSize(systemSendBufferSize);
         return this;
     }
 
     @Override
     public UdtServerChannelConfig setSystemSendBufferSize(
-            final int systemSendBufferSize) {
-        super.setSystemSendBufferSize(systemSendBufferSize);
+            final int systemReceiveBufferSize) {
+        super.setSystemSendBufferSize(systemReceiveBufferSize);
         return this;
     }
 
