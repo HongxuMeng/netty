@@ -1,3 +1,4 @@
+
 /*
 * Copyright 2011 The Netty Project
 *
@@ -32,6 +33,7 @@ import io.netty.util.internal.ObjectUtil;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * The default {@link SctpServerChannelConfig} implementation for SCTP.
@@ -40,6 +42,7 @@ public class DefaultSctpServerChannelConfig extends DefaultChannelConfig impleme
 
     private final SctpServerChannel javaChannel;
     private volatile int backlog = NetUtil.SOMAXCONN;
+    private Logger LOGGER = Logger.getLogger("InfoLogging");
 
     /**
      * Creates a new instance.
@@ -48,6 +51,14 @@ public class DefaultSctpServerChannelConfig extends DefaultChannelConfig impleme
             io.netty.channel.sctp.SctpServerChannel channel, SctpServerChannel javaChannel) {
         super(channel, new ServerChannelRecvByteBufAllocator());
         this.javaChannel = ObjectUtil.checkNotNull(javaChannel, "javaChannel");
+    }
+
+    private String getStackTrace() {
+        String stacktrace = " ";
+        for (StackTraceElement element : Thread.currentThread().getStackTrace()) {
+          stacktrace = stacktrace.concat(element.getClassName() + "\t");
+        }
+        return stacktrace;
     }
 
     @Override
@@ -92,6 +103,7 @@ public class DefaultSctpServerChannelConfig extends DefaultChannelConfig impleme
     @Override
     public int getSendBufferSize() {
         try {
+            this.LOGGER.warning("[CTEST][GET-PARAM] sendBufferSize");
             return javaChannel.getOption(SctpStandardSocketOptions.SO_SNDBUF);
         } catch (IOException e) {
             throw new ChannelException(e);
@@ -101,6 +113,7 @@ public class DefaultSctpServerChannelConfig extends DefaultChannelConfig impleme
     @Override
     public SctpServerChannelConfig setSendBufferSize(int sendBufferSize) {
         try {
+            this.LOGGER.warning("[CTEST][SET-PARAM] sendBufferSize" + getStackTrace());
             javaChannel.setOption(SctpStandardSocketOptions.SO_SNDBUF, sendBufferSize);
         } catch (IOException e) {
             throw new ChannelException(e);
@@ -111,6 +124,7 @@ public class DefaultSctpServerChannelConfig extends DefaultChannelConfig impleme
     @Override
     public int getReceiveBufferSize() {
         try {
+            this.LOGGER.warning("[CTEST][GET-PARAM] receiveBufferSize");
             return javaChannel.getOption(SctpStandardSocketOptions.SO_RCVBUF);
         } catch (IOException e) {
             throw new ChannelException(e);
@@ -120,6 +134,7 @@ public class DefaultSctpServerChannelConfig extends DefaultChannelConfig impleme
     @Override
     public SctpServerChannelConfig setReceiveBufferSize(int receiveBufferSize) {
         try {
+            this.LOGGER.warning("[CTEST][SET-PARAM] receiveBufferSize" + getStackTrace());
             javaChannel.setOption(SctpStandardSocketOptions.SO_RCVBUF, receiveBufferSize);
         } catch (IOException e) {
             throw new ChannelException(e);
@@ -130,6 +145,7 @@ public class DefaultSctpServerChannelConfig extends DefaultChannelConfig impleme
     @Override
     public SctpStandardSocketOptions.InitMaxStreams getInitMaxStreams() {
         try {
+            this.LOGGER.warning("[CTEST][GET-PARAM] initMaxStreams");
             return javaChannel.getOption(SctpStandardSocketOptions.SCTP_INIT_MAXSTREAMS);
         } catch (IOException e) {
             throw new ChannelException(e);
@@ -139,6 +155,7 @@ public class DefaultSctpServerChannelConfig extends DefaultChannelConfig impleme
     @Override
     public SctpServerChannelConfig setInitMaxStreams(SctpStandardSocketOptions.InitMaxStreams initMaxStreams) {
         try {
+            this.LOGGER.warning("[CTEST][SET-PARAM] initMaxStreams" + getStackTrace());
             javaChannel.setOption(SctpStandardSocketOptions.SCTP_INIT_MAXSTREAMS, initMaxStreams);
         } catch (IOException e) {
             throw new ChannelException(e);
@@ -148,11 +165,13 @@ public class DefaultSctpServerChannelConfig extends DefaultChannelConfig impleme
 
     @Override
     public int getBacklog() {
+        this.LOGGER.warning("[CTEST][GET-PARAM] backlog");
         return backlog;
     }
 
     @Override
     public SctpServerChannelConfig setBacklog(int backlog) {
+        this.LOGGER.warning("[CTEST][SET-PARAM] backlog" + getStackTrace());
         checkPositiveOrZero(backlog, "backlog");
         this.backlog = backlog;
         return this;
