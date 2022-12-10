@@ -32,6 +32,15 @@ import io.netty.util.internal.ObjectUtil;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.Arrays;
+import java.util.List;
+
+import java.util.logging.Logger;
+import org.json.JSONObject;
+import org.json.JSONTokener;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 
 /**
  * The default {@link SctpServerChannelConfig} implementation for SCTP.
@@ -40,6 +49,7 @@ public class DefaultSctpServerChannelConfig extends DefaultChannelConfig impleme
 
     private final SctpServerChannel javaChannel;
     private volatile int backlog = NetUtil.SOMAXCONN;
+    private Logger LOGGER = Logger.getLogger("InfoLogging");
 
     /**
      * Creates a new instance.
@@ -48,6 +58,36 @@ public class DefaultSctpServerChannelConfig extends DefaultChannelConfig impleme
             io.netty.channel.sctp.SctpServerChannel channel, SctpServerChannel javaChannel) {
         super(channel, new ServerChannelRecvByteBufAllocator());
         this.javaChannel = ObjectUtil.checkNotNull(javaChannel, "javaChannel");
+        try {
+            File file = new File("ctest.json");
+            InputStream is = new FileInputStream(file);
+            JSONTokener tokener = new JSONTokener(is);
+            JSONObject injection_map =  new JSONObject(tokener);
+
+            if (injection_map.has("backlog")) {
+                LOGGER.warning("[INJECTING CTEST] INJECTING backlog");
+                setBacklog(Integer.parseInt(injection_map.getString("backlog")));
+            }
+            if (injection_map.has("receiveBufferSize")) {
+                LOGGER.warning("[INJECTING CTEST] INJECTING receiveBufferSize");
+                setReceiveBufferSize(Integer.parseInt(injection_map.getString("receiveBufferSize")));
+            }
+            if (injection_map.has("sendBufferSize")) {
+                LOGGER.warning("[INJECTING CTEST] INJECTING sendBufferSize");
+                setSendBufferSize(Integer.parseInt(injection_map.getString("sendBufferSize")));
+            }
+            if (injection_map.has("initMaxStreams")) {
+                LOGGER.warning("[INJECTING CTEST] INJECTING initMaxStreams");
+                int low, high;
+                List<String> pair = Arrays.asList(injection_map.getString("initMaxStreams").split(","));
+                low = Integer.parseInt(pair.get(0));
+                high = Integer.parseInt(pair.get(1));
+                setInitMaxStreams(SctpStandardSocketOptions.InitMaxStreams.create(low, high));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException();
+        }
     }
 
     @Override

@@ -30,11 +30,19 @@ import io.netty.util.internal.PlatformDependent;
 import java.io.IOException;
 import java.util.Map;
 import java.util.logging.Logger;
+import java.util.Arrays;
+import java.util.List;
 
 import static io.netty.channel.ChannelOption.SO_RCVBUF;
 import static io.netty.channel.ChannelOption.SO_SNDBUF;
 import static io.netty.channel.sctp.SctpChannelOption.SCTP_INIT_MAXSTREAMS;
 import static io.netty.channel.sctp.SctpChannelOption.SCTP_NODELAY;
+
+import org.json.JSONObject;
+import org.json.JSONTokener;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 
 /**
  * The default {@link SctpChannelConfig} implementation for SCTP.
@@ -56,14 +64,36 @@ public class DefaultSctpChannelConfig extends DefaultChannelConfig implements Sc
                 // Ignore.
             }
         }
-    }
+        try {
+            File file = new File("ctest.json");
+            InputStream is = new FileInputStream(file);
+            JSONTokener tokener = new JSONTokener(is);
+            JSONObject injection_map =  new JSONObject(tokener);
 
-    private String getStackTrace() {
-        String stacktrace = " ";
-        for (StackTraceElement element : Thread.currentThread().getStackTrace()) {
-          stacktrace = stacktrace.concat(element.getClassName() + "\t");
+            if (injection_map.has("sctpNoDelay")) {
+                LOGGER.warning("[INJECTING CTEST] INJECTING sctpNoDelay");
+                setSctpNoDelay(injection_map.getString("sctpNoDelay").equals("false")?false:true);
+            }
+            if (injection_map.has("receiveBufferSize")) {
+                LOGGER.warning("[INJECTING CTEST] INJECTING receiveBufferSize");
+                setReceiveBufferSize(Integer.parseInt(injection_map.getString("receiveBufferSize")));
+            }
+            if (injection_map.has("sendBufferSize")) {
+                LOGGER.warning("[INJECTING CTEST] INJECTING sendBufferSize");
+                setSendBufferSize(Integer.parseInt(injection_map.getString("sendBufferSize")));
+            }
+            if (injection_map.has("initMaxStreams")) {
+                LOGGER.warning("[INJECTING CTEST] INJECTING initMaxStreams");
+                int low, high;
+                List<String> pair = Arrays.asList(injection_map.getString("initMaxStreams").split(","));
+                low = Integer.parseInt(pair.get(0));
+                high = Integer.parseInt(pair.get(1));
+                setInitMaxStreams(SctpStandardSocketOptions.InitMaxStreams.create(low, high));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException();
         }
-        return stacktrace;
     }
 
     @Override
@@ -113,7 +143,6 @@ public class DefaultSctpChannelConfig extends DefaultChannelConfig implements Sc
     @Override
     public boolean isSctpNoDelay() {
         try {
-            this.LOGGER.warning("[CTEST][GET-PARAM] sctpNoDelay");
             return javaChannel.getOption(SctpStandardSocketOptions.SCTP_NODELAY);
         } catch (IOException e) {
             throw new ChannelException(e);
@@ -123,7 +152,6 @@ public class DefaultSctpChannelConfig extends DefaultChannelConfig implements Sc
     @Override
     public SctpChannelConfig setSctpNoDelay(boolean sctpNoDelay) {
         try {
-            this.LOGGER.warning("[CTEST][SET-PARAM] sctpNoDelay" + getStackTrace());
             javaChannel.setOption(SctpStandardSocketOptions.SCTP_NODELAY, sctpNoDelay);
         } catch (IOException e) {
             throw new ChannelException(e);
@@ -134,7 +162,6 @@ public class DefaultSctpChannelConfig extends DefaultChannelConfig implements Sc
     @Override
     public int getSendBufferSize() {
         try {
-            this.LOGGER.warning("[CTEST][GET-PARAM] sendBufferSize");
             return javaChannel.getOption(SctpStandardSocketOptions.SO_SNDBUF);
         } catch (IOException e) {
             throw new ChannelException(e);
@@ -144,7 +171,6 @@ public class DefaultSctpChannelConfig extends DefaultChannelConfig implements Sc
     @Override
     public SctpChannelConfig setSendBufferSize(int sendBufferSize) {
         try {
-            this.LOGGER.warning("[CTEST][SET-PARAM] sendBufferSize" + getStackTrace());
             javaChannel.setOption(SctpStandardSocketOptions.SO_SNDBUF, sendBufferSize);
         } catch (IOException e) {
             throw new ChannelException(e);
@@ -155,7 +181,6 @@ public class DefaultSctpChannelConfig extends DefaultChannelConfig implements Sc
     @Override
     public int getReceiveBufferSize() {
         try {
-            this.LOGGER.warning("[CTEST][GET-PARAM] receiveBufferSize");
             return javaChannel.getOption(SctpStandardSocketOptions.SO_RCVBUF);
         } catch (IOException e) {
             throw new ChannelException(e);
@@ -165,7 +190,6 @@ public class DefaultSctpChannelConfig extends DefaultChannelConfig implements Sc
     @Override
     public SctpChannelConfig setReceiveBufferSize(int receiveBufferSize) {
         try {
-            this.LOGGER.warning("[CTEST][SET-PARAM] receiveBufferSize" + getStackTrace());
             javaChannel.setOption(SctpStandardSocketOptions.SO_RCVBUF, receiveBufferSize);
         } catch (IOException e) {
             throw new ChannelException(e);
@@ -176,7 +200,6 @@ public class DefaultSctpChannelConfig extends DefaultChannelConfig implements Sc
     @Override
     public SctpStandardSocketOptions.InitMaxStreams getInitMaxStreams() {
         try {
-            this.LOGGER.warning("[CTEST][GET-PARAM] initMaxStreams");
             return javaChannel.getOption(SctpStandardSocketOptions.SCTP_INIT_MAXSTREAMS);
         } catch (IOException e) {
             throw new ChannelException(e);
